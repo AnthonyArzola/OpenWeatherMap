@@ -2,14 +2,38 @@ import XCTest
 @testable import OpenWeatherMap
 
 final class OpenWeatherMapTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(OpenWeatherMap().text, "Hello, World!")
+    
+    func testInitFunction() {
+        let service = OpenWeatherMap.init()
+        XCTAssertNotNil(service)
+    }
+    
+    func testGetWeatherAtLocation() {
+        let expectation = XCTestExpectation.init(description: "Retrieve weather at location")
+        #warning("Warning - Please add your API here")
+        let apiKey = ""
+        let weatherService = OpenWeatherMap.init()
+        
+        XCTAssertNotEqual(apiKey, "", "API Key is missing")
+        
+        weatherService.weatherAt(latitude: 34.0580, longitude: -117.8239, apiKey: apiKey, completion: { (success: Bool, results: WeatherResults?) -> Void in
+            if (success) {
+                print("Success! \(String(describing: results))")
+                XCTAssertNotNil(results)
+                XCTAssertNotNil(results?.name)
+                expectation.fulfill()
+            } else {
+                print("Failure!")
+                XCTAssertNil(results)
+                expectation.fulfill()
+            }
+        })
+        
+        self.wait(for: [expectation], timeout: 100.0)
     }
 
     static var allTests = [
-        ("testExample", testExample),
+        ("testInitFunction", testInitFunction),
+        ("testGetWeatherAtLocation", testGetWeatherAtLocation),
     ]
 }
