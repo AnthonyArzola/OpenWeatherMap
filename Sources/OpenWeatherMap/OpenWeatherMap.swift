@@ -13,7 +13,7 @@ public class OpenWeatherMap {
      Retrieves weather at specified point (`latitude`, `longitude`).
      Completion handler takes a tuple (`Bool`, `WeatherResults`) with first parameter used to signify if weather was retrieved successfully.
      */
-    public func weatherAt(latitude lat: Double, longitude long: Double, apiKey key: String, completion closure: @escaping (Bool, WeatherResults?) -> Void) -> Void {
+    public func weatherAt(latitude lat: Double, longitude long: Double, apiKey key: String, completion closure: @escaping (Bool, WeatherResult?) -> Void) -> Void {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
         
         // Configure request
@@ -31,7 +31,7 @@ public class OpenWeatherMap {
                 }
                 let decoder = JSONDecoder()
                 do {
-                    let weather = try decoder.decode(WeatherResults.self, from: data)
+                    let weather = try decoder.decode(WeatherResult.self, from: data)
                     // Success
                     closure(true, weather)
                 } catch let error {

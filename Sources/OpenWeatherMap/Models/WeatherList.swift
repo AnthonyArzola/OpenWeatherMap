@@ -1,8 +1,9 @@
 //
-//  File.swift
-//  
+//  WeatherList.swift
+//  OpenWeatherMap
 //
 //  Created by Anthony Arzola on 7/7/19.
+//  Copyright © 2019 Anthony Arzola. All rights reserved.
 //
 
 import Foundation
@@ -21,7 +22,7 @@ public struct WeatherList: Codable {
     public let message: String
     public let cod: String
     public let count: Int
-    public let results: [WeatherResults]?
+    public let results: [WeatherResult]?
     
     private enum CodingKeys: String, CodingKey {
         case message

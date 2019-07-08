@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct WeatherResults: Codable {
+public struct WeatherResult: Codable {
     public let name: String
     public let Id: Int
     public let timezone: Int?
