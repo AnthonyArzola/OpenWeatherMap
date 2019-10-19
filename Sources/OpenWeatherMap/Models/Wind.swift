@@ -19,7 +19,7 @@ import Foundation
 
 public struct Wind: Codable {
     public let speed: Double
-    public let degrees: Double
+    public let degrees: Double?
     
     private enum CodingKeys: String, CodingKey {
         case speed
