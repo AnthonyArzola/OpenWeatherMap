@@ -8,13 +8,6 @@ jobs:
       FASTLANE_LANE: build_debug
     steps:
       - checkout
-      # Install CocoaPods
-      - run:
-          name: Install CocoaPods
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-            pod install
-
       # Build app
       - run:
           name: Build
