@@ -13,7 +13,9 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-default_platform(:ios)
+fastlane_version "2.121.1"
+default_platform :ios
+xcversion(version: "~> 10.3.0")
 
 platform :ios do
   desc "Clean project"
