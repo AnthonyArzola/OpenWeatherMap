@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    # Specify the Xcode version to use
+    macos:
+      xcode: "10.3.0"
+
+    steps:
+      - checkout
+
+      # Install CocoaPods
+      - run:
+          name: Install CocoaPods
+          command: pod install
+
+      # Build app
+      - run:
+          name: Build
+          command: fastlane build_debug
