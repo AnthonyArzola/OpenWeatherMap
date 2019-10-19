@@ -8,6 +8,10 @@ jobs:
       FASTLANE_LANE: build_debug
     steps:
       - checkout
+      # Specify Ruby version
+      - run:
+        name: Set Ruby Version
+        command: echo "ruby-2.4.0" > ~/.ruby-version
       # Bundle
       - restore_cache:
           key: 1-gems-{{ checksum "Gemfile.lock" }}
