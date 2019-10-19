@@ -4,16 +4,18 @@ jobs:
     # Specify the Xcode version to use
     macos:
       xcode: "10.3.0"
-
+    environment:
+      FASTLANE_LANE: build_debug
     steps:
       - checkout
-
       # Install CocoaPods
       - run:
           name: Install CocoaPods
-          command: pod install
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            pod install
 
       # Build app
       - run:
           name: Build
-          command: fastlane build_debug
+          command: bundle exec fastlane $FASTLANE_LANE --verbose
