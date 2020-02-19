@@ -3,20 +3,26 @@ import Foundation
 public class OpenWeatherMap {
     private let session: URLSession
     private let baseUrl: String
+    var apiKey: String?
     
-    public init() {
-        self.session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
-        self.baseUrl = "http://api.openweathermap.org/data/2.5"
+    public init(apiKey key: String) {
+        if key.isEmpty {
+            fatalError("API key required.")
+        }
+        session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
+        baseUrl = "http://api.openweathermap.org/data/2.5"
+        apiKey = key
     }
     
     /**
      Retrieves weather at specified point (`latitude`, `longitude`).
      Completion handler takes a tuple (`Bool`, `WeatherResults`) with first parameter used to signify if weather was retrieved successfully.
      */
-    public func weatherAt(latitude lat: Double, longitude long: Double, apiKey key: String, completion closure: @escaping (Bool, WeatherResult?) -> Void) -> Void {
+    public func weatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, WeatherResult?) -> Void) -> Void {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
         
         // Configure request
+        guard let key = apiKey else { return }
         guard let url = URL(string:"\(baseUrl)/weather?lat=\(lat)&lon=\(long)&APPID=\(key)") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -56,10 +62,11 @@ public class OpenWeatherMap {
      Completion handler takes a tuple (`Bool`, `WeatherList`) with first parameter used to signify if weather was retrieved successfully.
      The default number of cities is 10, the maximum is 50.
      */
-    public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, apiKey key: String, completion closure: @escaping (Bool, WeatherList?) -> Void) -> Void {
+    public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, WeatherList?) -> Void) -> Void {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         
         // Configure request
+        guard let key = apiKey else { return }
         guard let url = URL(string:"\(baseUrl)/find?lat=\(lat)&lon=\(long)&cnt=\(count)&APPID=\(key)") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
