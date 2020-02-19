@@ -10,7 +10,7 @@ public class OpenWeatherMap {
             fatalError("API key required.")
         }
         session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: nil)
-        baseUrl = "http://api.openweathermap.org/data/2.5"
+        baseUrl = "https://api.openweathermap.org/data/2.5"
         apiKey = key
     }
     
