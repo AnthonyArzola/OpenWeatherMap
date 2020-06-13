@@ -53,6 +53,27 @@ final class OpenWeatherMapTests: XCTestCase {
         self.wait(for: [expectation], timeout: 100.0)
     }
     
+    func testGetWeatherByName() {
+        let expectation = XCTestExpectation.init(description: "Retrieve weather by name")
+        let weatherService = OpenWeatherMap(apiKey: apiKey)
+        
+        XCTAssertNotEqual(apiKey, "", "API Key is missing")
+        weatherService.weatherAt(cityName: "Irvine,CA") { (success, weather) in
+            if success {
+                print("Success! \(String(describing: weather))")
+                XCTAssertNotNil(weather)
+                XCTAssertNotNil(weather?.results)
+                expectation.fulfill()
+            } else {
+                print("Failure!")
+                XCTAssertNil(weather)
+                expectation.fulfill()
+            }
+        }
+        
+        self.wait(for: [expectation], timeout: 100.0)
+    }
+    
     static var allTests = [
         ("testInitFunction", testInitFunction),
         ("testGetWeatherAtLocation", testGetWeatherAtLocation),
