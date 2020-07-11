@@ -22,7 +22,7 @@ public struct WeatherList: Codable {
     public let message: String
     public let cod: String
     public let count: Int
-    public let results: [WeatherResult]?
+    public let results: [CityWeather]?
     
     private enum CodingKeys: String, CodingKey {
         case message

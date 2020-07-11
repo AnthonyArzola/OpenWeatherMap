@@ -17,7 +17,7 @@ public class OpenWeatherMap {
     /**
      Retrieves weather at specified point (`latitude`, `longitude`).
      */
-    public func weatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, WeatherResult?) -> Void) {
+    public func weatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
         
         // Configure request
@@ -36,7 +36,7 @@ public class OpenWeatherMap {
                 }
                 let decoder = JSONDecoder()
                 do {
-                    let weather = try decoder.decode(WeatherResult.self, from: data)
+                    let weather = try decoder.decode(CityWeather.self, from: data)
                     // Success
                     closure(true, weather)
                 } catch let error {
@@ -99,7 +99,6 @@ public class OpenWeatherMap {
         task.resume()
         session.finishTasksAndInvalidate()
     }
-    
     
     /**
      Retrieves weather for specific city (e.g., "berkeley,ca).
