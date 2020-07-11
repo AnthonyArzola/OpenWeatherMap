@@ -1,5 +1,5 @@
 //
-//  WeatherList.swift
+//  CityWeatherList.swift
 //  OpenWeatherMap
 //
 //  Created by Anthony Arzola on 7/7/19.
@@ -18,7 +18,7 @@ import Foundation
  }
  */
 
-public struct WeatherList: Codable {
+public struct CityWeatherList: Codable {
     public let message: String
     public let cod: String
     public let count: Int

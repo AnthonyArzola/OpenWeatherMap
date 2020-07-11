@@ -37,7 +37,7 @@ final class OpenWeatherMapTests: XCTestCase {
         let weatherService = OpenWeatherMap(apiKey: apiKey)
         
         XCTAssertNotEqual(apiKey, "", "API Key is missing")
-        weatherService.weatherAt(latitude: 34.0429, longitude: -118.2449, resultCount: 15, completion: { (success: Bool, weather: WeatherList?) -> Void in
+        weatherService.weatherAt(latitude: 34.0429, longitude: -118.2449, resultCount: 15, completion: { (success: Bool, weather: CityWeatherList?) -> Void in
             if (success) {
                 print("Success! \(String(describing: weather))")
                 XCTAssertNotNil(weather)

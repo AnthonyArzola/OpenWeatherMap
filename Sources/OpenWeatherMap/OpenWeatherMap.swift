@@ -60,7 +60,7 @@ public class OpenWeatherMap {
      Creates circle around specified point (`latitude`, `longitude`) and returns weather for expected number of cities defined by `resultCount`.
      The default number of cities is 10, the maximum is 50.
      */
-    public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, WeatherList?) -> Void) {
+    public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, CityWeatherList?) -> Void) {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         
         // Configure request
@@ -79,7 +79,7 @@ public class OpenWeatherMap {
                 
                 let decoder = JSONDecoder()
                 do {
-                    let results = try decoder.decode(WeatherList.self, from: data)
+                    let results = try decoder.decode(CityWeatherList.self, from: data)
                     // Success
                     closure(true, results)
                 }
@@ -103,7 +103,7 @@ public class OpenWeatherMap {
     /**
      Retrieves weather for specific city (e.g., "berkeley,ca).
      */
-    public func weatherAt(cityName: String, completion closure: @escaping (Bool, WeatherList?) -> Void) {
+    public func weatherAt(cityName: String, completion closure: @escaping (Bool, CityWeatherList?) -> Void) {
         /// API Examples:
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName}&appid={YOUR_API_KEY}
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName},{StateCode}&appid={YOUR_API_KEY}
@@ -122,7 +122,7 @@ public class OpenWeatherMap {
                 
                 let decoder = JSONDecoder()
                 do {
-                    let results = try decoder.decode(WeatherList.self, from: data)
+                    let results = try decoder.decode(CityWeatherList.self, from: data)
                     // Success
                     closure(true, results)
                 }
