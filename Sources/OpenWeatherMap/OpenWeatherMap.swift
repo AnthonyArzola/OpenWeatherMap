@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 enum HttpMethodType: String {
     case GET
@@ -8,7 +9,7 @@ public class OpenWeatherMap {
     // MARK: - Properties
     private let session: URLSession
     private let baseUrl: String
-    var apiKey: String?
+    private (set) var apiKey: String?
     
     // MARK: - Constructors
     public init(apiKey key: String) {
@@ -29,40 +30,16 @@ public class OpenWeatherMap {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
         guard let key = apiKey else { return }
         
-        // Configure URL and request
+        // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
         urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
         urlQueryitems.append(URLQueryItem(name: "appid", value: key))
-        
         guard let url = createUrl(endpoint: "/weather", urlQueryItems: urlQueryitems) else { return }
+        // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
-        
-        let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
-            if (error == nil) {
-                // Handle response
-                guard let data = data else
-                {
-                    closure(false, nil)
-                    return
-                }
-                let decoder = JSONDecoder()
-                do {
-                    let weather = try decoder.decode(CityWeather.self, from: data)
-                    // Success
-                    closure(true, weather)
-                } catch let error {
-                    // Decoding error
-                    print("Unable to decode. Error is: \(error)")
-                    closure(false, nil)
-                }
-            } else {
-                // Failure
-                let statusCode = (response as! HTTPURLResponse).statusCode
-                print("URL request failed with code:\(statusCode) and error:\(error!.localizedDescription)")
-                closure(false, nil)
-            }
-        }
+        // Create task
+        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
@@ -76,42 +53,17 @@ public class OpenWeatherMap {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         guard let key = apiKey else { return }
                 
-        // Configure URL and request
+        // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
         urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
         urlQueryitems.append(URLQueryItem(name: "cnt", value: "\(count)"))
         urlQueryitems.append(URLQueryItem(name: "appid", value: key))
-        
         guard let url = createUrl(endpoint: "/find", urlQueryItems: urlQueryitems) else { return }
+        // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
-        
-        let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
-            if (error == nil) {
-                // Handle response
-                guard let data = data else {
-                    closure(false, nil)
-                    return
-                }
-                
-                let decoder = JSONDecoder()
-                do {
-                    let results = try decoder.decode(CityWeatherList.self, from: data)
-                    // Success
-                    closure(true, results)
-                }
-                catch let error {
-                    // Decoding error
-                    print("Unable to decode. Error is: \(error)")
-                    closure(false, nil)
-                }
-            } else {
-                // Failure
-                let statusCode = (response as! HTTPURLResponse).statusCode
-                print("URL request failed with code:\(statusCode) and error:\(error!.localizedDescription)")
-                closure(false, nil)
-            }
-        }
+        // Create task
+        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
@@ -126,40 +78,15 @@ public class OpenWeatherMap {
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName},{StateCode}&appid={YOUR_API_KEY}
         guard let key = apiKey else { return }
         
-        // Configure URL and request
+        // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "q", value: "\(cityName)"))
         urlQueryitems.append(URLQueryItem(name: "appid", value: key))
-        
         guard let url = createUrl(endpoint: "/weather", urlQueryItems: urlQueryitems) else { return }
+        // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
-        
-        let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
-            if (error == nil) {
-                // Handle response
-                guard let data = data else {
-                    closure(false, nil)
-                    return
-                }
-                
-                let decoder = JSONDecoder()
-                do {
-                    let results = try decoder.decode(CityWeather.self, from: data)
-                    // Success
-                    closure(true, results)
-                }
-                catch let error {
-                    // Decoding error
-                    print("Unable to decode. Error is: \(error)")
-                    closure(false, nil)
-                }
-            } else {
-                // Failure
-                let statusCode = (response as! HTTPURLResponse).statusCode
-                print("URL request failed with code:\(statusCode) and error:\(error!.localizedDescription)")
-                closure(false, nil)
-            }
-        }
+        // Create URL request
+        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
@@ -178,6 +105,34 @@ public class OpenWeatherMap {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = httpMethodType.rawValue
         return urlRequest
+    }
+    
+    private func createUrlSessionDataTask<T: Decodable>(urlRequest: URLRequest, completion closure: @escaping (Bool, T?) -> Void) -> URLSessionDataTask {
+        return session.dataTask(with: urlRequest) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
+            if (error == nil) {
+                // Handle response
+                guard let data = data else {
+                    closure(false, nil)
+                    return
+                }
+                
+                let decoder = JSONDecoder()
+                do {
+                    let weather = try decoder.decode(T.self, from: data)
+                    // Success
+                    closure(true, weather)
+                } catch let error {
+                    // Decoding error
+                    print("Unable to decode. Error is: \(error)")
+                    closure(false, nil)
+                }
+            } else {
+                // Failure
+                let statusCode = (response as! HTTPURLResponse).statusCode
+                print("URL request failed with code:\(statusCode) and error:\(error!.localizedDescription)")
+                closure(false, nil)
+            }
+        }
     }
     
 }
