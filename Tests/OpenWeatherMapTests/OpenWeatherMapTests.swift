@@ -3,7 +3,7 @@ import XCTest
 
 final class OpenWeatherMapTests: XCTestCase {
     #warning("Warning - Please add your API here")
-    let apiKey = ""
+    let apiKey = "7e0083f4f2be094bcb651e9d9ace98b0"
 
     func testInitFunction() {
         let service = OpenWeatherMap(apiKey: apiKey)
@@ -58,15 +58,16 @@ final class OpenWeatherMapTests: XCTestCase {
         let weatherService = OpenWeatherMap(apiKey: apiKey)
         
         XCTAssertNotEqual(apiKey, "", "API Key is missing")
-        weatherService.weatherAt(cityName: "Irvine,CA") { (success, weather) in
+        weatherService.weatherAt(cityName: "Irvine,CA") { (success, cityWeather) in
             if success {
-                print("Success! \(String(describing: weather))")
-                XCTAssertNotNil(weather)
-                XCTAssertNotNil(weather?.results)
+                print("Success! \(String(describing: cityWeather))")
+                XCTAssertNotNil(cityWeather)
+                XCTAssert(cityWeather?.weather.count ?? 0 > 0)
                 expectation.fulfill()
             } else {
                 print("Failure!")
-                XCTAssertNil(weather)
+                //XCTAssertNil(weather)
+                XCTFail()
                 expectation.fulfill()
             }
         }

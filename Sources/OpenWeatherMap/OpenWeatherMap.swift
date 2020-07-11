@@ -1,10 +1,16 @@
 import Foundation
 
+enum HttpMethodType: String {
+    case GET
+}
+
 public class OpenWeatherMap {
+    // MARK: - Properties
     private let session: URLSession
     private let baseUrl: String
     var apiKey: String?
     
+    // MARK: - Constructors
     public init(apiKey key: String) {
         if key.isEmpty {
             fatalError("API key required.")
@@ -14,17 +20,23 @@ public class OpenWeatherMap {
         apiKey = key
     }
     
+    // MARK: - Public methods
+    
     /**
      Retrieves weather at specified point (`latitude`, `longitude`).
      */
     public func weatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
-        
-        // Configure request
         guard let key = apiKey else { return }
-        guard let url = URL(string:"\(baseUrl)/weather?lat=\(lat)&lon=\(long)&appid=\(key)") else { return }
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        
+        // Configure URL and request
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        
+        guard let url = createUrl(endpoint: "/weather", urlQueryItems: urlQueryitems) else { return }
+        let request = createUrlRequest(url: url, httpMethodType: .GET)
         
         let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             if (error == nil) {
@@ -62,12 +74,17 @@ public class OpenWeatherMap {
      */
     public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, CityWeatherList?) -> Void) {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
-        
-        // Configure request
         guard let key = apiKey else { return }
-        guard let url = URL(string:"\(baseUrl)/find?lat=\(lat)&lon=\(long)&cnt=\(count)&appid=\(key)") else { return }
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+                
+        // Configure URL and request
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "cnt", value: "\(count)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        
+        guard let url = createUrl(endpoint: "/find", urlQueryItems: urlQueryitems) else { return }
+        let request = createUrlRequest(url: url, httpMethodType: .GET)
         
         let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             if (error == nil) {
@@ -103,14 +120,19 @@ public class OpenWeatherMap {
     /**
      Retrieves weather for specific city (e.g., "berkeley,ca).
      */
-    public func weatherAt(cityName: String, completion closure: @escaping (Bool, CityWeatherList?) -> Void) {
+    public func weatherAt(cityName: String, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         /// API Examples:
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName}&appid={YOUR_API_KEY}
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName},{StateCode}&appid={YOUR_API_KEY}
         guard let key = apiKey else { return }
-        guard let url = URL(string:"\(baseUrl)/weather?q=\(cityName)&appid=\(key)") else { return }
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        
+        // Configure URL and request
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "q", value: "\(cityName)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        
+        guard let url = createUrl(endpoint: "/weather", urlQueryItems: urlQueryitems) else { return }
+        let request = createUrlRequest(url: url, httpMethodType: .GET)
         
         let task = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             if (error == nil) {
@@ -122,7 +144,7 @@ public class OpenWeatherMap {
                 
                 let decoder = JSONDecoder()
                 do {
-                    let results = try decoder.decode(CityWeatherList.self, from: data)
+                    let results = try decoder.decode(CityWeather.self, from: data)
                     // Success
                     closure(true, results)
                 }
@@ -141,6 +163,21 @@ public class OpenWeatherMap {
         
         task.resume()
         session.finishTasksAndInvalidate()
-        
     }
+    
+    // MARK: - Private methods
+    
+    private func createUrl(endpoint: String, urlQueryItems: [URLQueryItem]?) -> URL? {
+        var components = URLComponents(string: baseUrl)
+        components?.path.append(endpoint)
+        components?.queryItems = urlQueryItems
+        return components?.url
+    }
+    
+    private func createUrlRequest(url: URL, httpMethodType: HttpMethodType) -> URLRequest {
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = httpMethodType.rawValue
+        return urlRequest
+    }
+    
 }
