@@ -3,7 +3,7 @@ import XCTest
 
 final class OpenWeatherMapTests: XCTestCase {
     #warning("Warning - Please add your API here")
-    let apiKey = "7e0083f4f2be094bcb651e9d9ace98b0"
+    let apiKey = ""
 
     func testInitFunction() {
         let service = OpenWeatherMap(apiKey: apiKey)
