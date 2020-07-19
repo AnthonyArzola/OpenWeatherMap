@@ -21,7 +21,7 @@ public class OpenWeatherMap {
         apiKey = key
     }
     
-    // MARK: - Public methods
+    // MARK: - Public methods (Closure based)
     
     /**
      Retrieves weather at specified point (`latitude`, `longitude`).
@@ -39,7 +39,7 @@ public class OpenWeatherMap {
         // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
-        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
+        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
@@ -63,7 +63,7 @@ public class OpenWeatherMap {
         // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
-        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
+        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
@@ -86,10 +86,77 @@ public class OpenWeatherMap {
         // Create URL request
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create URL request
-        let task = createUrlSessionDataTask(urlRequest: request, completion: closure)
+        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
         
         task.resume()
         session.finishTasksAndInvalidate()
+    }
+    
+    // MARK: - Public Methods (Combined based)
+    
+    public func weatherAt(lat: Double, long: Double) -> AnyPublisher<CityWeather, Error> {
+        // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
+        
+        // Ensure API was set
+        guard let key = self.apiKey else {
+            return Fail(error: ApiError.missingApiKeyError).eraseToAnyPublisher()
+        }
+        
+        // Create and configure URL
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        guard let url = createUrl(endpoint: "/weather", urlQueryItems: urlQueryitems) else {
+            return Fail(error: URLError(URLError.unsupportedURL)).eraseToAnyPublisher()
+        }
+        
+        // Create URL request
+        let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
+        
+        // Create publisher that wraps Url Session Data task and return decoded entity or error
+        return self.session.dataTaskPublisher(for: urlRequest)
+            .tryMap { (data, response) -> Data in
+                guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
+                    throw ApiError.responseError((response as? HTTPURLResponse)?.statusCode ?? 500)
+                }
+                return data
+        }
+        .decode(type: CityWeather.self, decoder: JSONDecoder())
+        .eraseToAnyPublisher()
+    }
+    
+    public func weatherAt(lat: Double, long: Double, cityCount: Int) -> AnyPublisher<CityWeatherList, Error> {
+        // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
+
+        // Ensure API was set
+        guard let key = self.apiKey else {
+            return Fail(error: ApiError.missingApiKeyError).eraseToAnyPublisher()
+        }
+        
+        // Create and cofigure URL
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "cnt", value: "\(cityCount)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        guard let url = self.createUrl(endpoint: "/find", urlQueryItems: urlQueryitems) else {
+            return Fail(error: URLError(URLError.unsupportedURL)).eraseToAnyPublisher()
+        }
+        
+        // Create URL request
+        let urlRequest = self.createUrlRequest(url: url, httpMethodType: .GET)
+        
+        // Create publisher that wraps Url Session Data task
+        return self.session.dataTaskPublisher(for: urlRequest)
+            .tryMap { (data, response) -> Data in
+                guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
+                    throw ApiError.responseError((response as? HTTPURLResponse)?.statusCode ?? 500)
+                }
+                return data
+        }
+        .decode(type: CityWeatherList.self, decoder: JSONDecoder())
+        .eraseToAnyPublisher()
     }
     
     // MARK: - Private methods
@@ -107,7 +174,7 @@ public class OpenWeatherMap {
         return urlRequest
     }
     
-    private func createUrlSessionDataTask<T: Decodable>(urlRequest: URLRequest, completion closure: @escaping (Bool, T?) -> Void) -> URLSessionDataTask {
+    private func createRequestAndDecodeUrlSessionDataTask<T: Decodable>(urlRequest: URLRequest, completion closure: @escaping (Bool, T?) -> Void) -> URLSessionDataTask {
         return session.dataTask(with: urlRequest) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             if (error == nil) {
                 // Handle response

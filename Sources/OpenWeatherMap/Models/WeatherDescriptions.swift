@@ -39,7 +39,7 @@ public enum WeatherIconType: String, Codable {
     }
 */
 
-public struct Weather: Codable {
+public struct WeatherDescriptions: Codable {
     public let Id: Int
     public let shortDescription: String
     public let longDescription: String

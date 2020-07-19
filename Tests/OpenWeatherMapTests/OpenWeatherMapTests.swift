@@ -62,7 +62,7 @@ final class OpenWeatherMapTests: XCTestCase {
             if success {
                 print("Success! \(String(describing: cityWeather))")
                 XCTAssertNotNil(cityWeather)
-                XCTAssert(cityWeather?.weather.count ?? 0 > 0)
+                XCTAssert(cityWeather?.weatherDescriptions?.count ?? 0 > 0)
                 expectation.fulfill()
             } else {
                 print("Failure!")
