@@ -12,25 +12,25 @@ import Foundation
  Model the following response:
  
  "main": {
-         "temp": 289.47,
-         "temp_min": 289.47,
-         "temp_max": 291.646,
-         "pressure": 1011.71,
-         "sea_level": 1011.71,
-         "grnd_level": 998.71,
-         "humidity": 71,
-         "temp_kf": -2.18
+             "temp": 302.28,
+             "feels_like": 302.7,
+             "temp_min": 299.15,
+             "temp_max": 304.82,
+             "pressure": 1009,
+             "humidity": 47
         }
  */
 
 public struct WeatherAttributes: Codable {
     public let temperature: Double //in Kelvin
+    public let feelsLike: Double // in Kelvin
     public let tempMimimum: Double //in Kelvin
     public let tempMaximum: Double //in Kelvin
     public let pressure: Double
     public let humidity: Double
     
     private enum CodingKeys: String, CodingKey {
+        case feelsLike = "feels_like"
         case temperature = "temp"
         case tempMimimum = "temp_min"
         case tempMaximum = "temp_max"
