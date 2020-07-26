@@ -5,7 +5,7 @@ enum HttpMethodType: String {
     case GET
 }
 
-public class OpenWeatherMap {
+public class OpenWeatherMapService {
     // MARK: - Properties
     private let session: URLSession
     private let baseUrl: String

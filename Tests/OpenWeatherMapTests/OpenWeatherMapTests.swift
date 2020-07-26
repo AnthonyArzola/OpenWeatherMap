@@ -6,13 +6,13 @@ final class OpenWeatherMapTests: XCTestCase {
     let apiKey = ""
 
     func testInitFunction() {
-        let service = OpenWeatherMap(apiKey: apiKey)
+        let service = OpenWeatherMapService(apiKey: apiKey)
         XCTAssertNotNil(service)
     }
 
     func testGetWeatherAtLocation() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather at location")
-        let weatherService = OpenWeatherMap(apiKey: apiKey)
+        let weatherService = OpenWeatherMapService(apiKey: apiKey)
 
         XCTAssertNotEqual(apiKey, "", "API Key is missing")
 
@@ -34,7 +34,7 @@ final class OpenWeatherMapTests: XCTestCase {
     
     func testGetCitiesAtCircle() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather at location")
-        let weatherService = OpenWeatherMap(apiKey: apiKey)
+        let weatherService = OpenWeatherMapService(apiKey: apiKey)
         
         XCTAssertNotEqual(apiKey, "", "API Key is missing")
         weatherService.weatherAt(latitude: 34.0429, longitude: -118.2449, resultCount: 15, completion: { (success: Bool, weather: CityWeatherList?) -> Void in
@@ -55,7 +55,7 @@ final class OpenWeatherMapTests: XCTestCase {
     
     func testGetWeatherByName() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather by name")
-        let weatherService = OpenWeatherMap(apiKey: apiKey)
+        let weatherService = OpenWeatherMapService(apiKey: apiKey)
         
         XCTAssertNotEqual(apiKey, "", "API Key is missing")
         weatherService.weatherAt(cityName: "Irvine,CA") { (success, cityWeather) in

@@ -18,7 +18,7 @@ Currently, this packages does not have any third-party dependencies.
 ## Example
 
 ```swift
-let weatherService = OpenWeatherMap.init()
+let weatherService = OpenWeatherMapService(apiKey: "API_KEY_HERE")
 
 weatherService.weatherAt(latitude: 34.0580, longitude: -117.8239, apiKey: apiKey, completion: { (success: Bool, results: WeatherResults?) -> Void in
     if (success) {
