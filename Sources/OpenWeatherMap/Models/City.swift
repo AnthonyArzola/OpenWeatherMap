@@ -8,9 +8,16 @@
 
 import Foundation
 
-public struct City: Decodable {
+public struct City: Codable {
     public let id: Int
     public let name: String
     public let country: String
     public let coordinate: Coordinate
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case country
+        case coordinate = "coord"
+    }
 }

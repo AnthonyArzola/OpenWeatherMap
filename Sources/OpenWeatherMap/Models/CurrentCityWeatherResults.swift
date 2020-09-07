@@ -18,7 +18,7 @@ import Foundation
  }
  */
 
-public struct CityWeatherList: Codable {
+public struct CurrentCityWeatherResults: Codable {
     public let message: String
     public let cod: String
     public let count: Int

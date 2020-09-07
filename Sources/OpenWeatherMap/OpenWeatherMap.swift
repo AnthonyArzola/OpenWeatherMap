@@ -23,10 +23,8 @@ public class OpenWeatherMapService {
     
     // MARK: - Public methods (Closure based)
     
-    /**
-     Retrieves weather at specified point (`latitude`, `longitude`).
-     */
-    public func weatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CityWeather?) -> Void) {
+    /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
+    public func currentWeatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
         guard let key = apiKey else { return }
         
@@ -45,11 +43,9 @@ public class OpenWeatherMapService {
         session.finishTasksAndInvalidate()
     }
     
-    /**
-     Creates circle around specified point (`latitude`, `longitude`) and returns weather for expected number of cities defined by `resultCount`.
-     The default number of cities is 10, the maximum is 50.
-     */
-    public func weatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, CityWeatherList?) -> Void) {
+    /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for expected number of cities defined by `resultCount`.
+    /// The default number of cities is 10, the maximum is 50.
+    public func currentWeatherAt(latitude lat: Double, longitude long: Double, resultCount count: Int, completion closure: @escaping (Bool, CurrentCityWeatherResults?) -> Void) {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         guard let key = apiKey else { return }
                 
@@ -68,8 +64,29 @@ public class OpenWeatherMapService {
         task.resume()
         session.finishTasksAndInvalidate()
     }
-    
-    public func weatherForecastAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool,Forecast?) -> Void) {
+
+    /// Gets 5-day weather forecast with data every 3 hours for geographic coordinates.
+    public func forecastWeatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, ForecastWeatherResults?) -> Void) {
+        guard let key = apiKey else { return }
+        
+        // Create and configure URL
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        
+        guard let url = createUrl(endpoint: "/forecast", urlQueryItems: urlQueryitems) else { return }
+        // Create URL request
+        let request = createUrlRequest(url: url, httpMethodType: .GET)
+        // Create task
+        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
+        
+        task.resume()
+        session.finishTasksAndInvalidate()
+    }
+
+    /// Gets current weather and 7-day forecast for geographic coordinates.
+    public func currentWeatherAndForecastAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CurrentWeatherAndForecastResults?) -> Void) {
         guard let key = apiKey else { return }
         
         // Create and configure URL
@@ -89,10 +106,8 @@ public class OpenWeatherMapService {
         session.finishTasksAndInvalidate()
     }
     
-    /**
-     Retrieves weather for specific city (e.g., "berkeley,ca).
-     */
-    public func weatherAt(cityName: String, completion closure: @escaping (Bool, CityWeather?) -> Void) {
+    /// Get current weather for specific city (e.g., "berkeley,ca").
+    public func currentWeatherAt(cityName: String, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         /// API Examples:
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName}&appid={YOUR_API_KEY}
         /// GET api.openweathermap.org/data/2.5/weather?q={CityName},{StateCode}&appid={YOUR_API_KEY}
@@ -112,7 +127,7 @@ public class OpenWeatherMapService {
         session.finishTasksAndInvalidate()
     }
     
-    // MARK: - Public Methods (Combined based)
+    // MARK: - Public methods (Combine)
     
     public func weatherAt(lat: Double, long: Double) -> AnyPublisher<CityWeather, Error> {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
@@ -146,7 +161,7 @@ public class OpenWeatherMapService {
         .eraseToAnyPublisher()
     }
     
-    public func weatherAt(lat: Double, long: Double, cityCount: Int) -> AnyPublisher<CityWeatherList, Error> {
+    public func weatherAt(lat: Double, long: Double, cityCount: Int) -> AnyPublisher<CurrentCityWeatherResults, Error> {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
 
         // Ensure API was set
@@ -175,7 +190,7 @@ public class OpenWeatherMapService {
                 }
                 return data
         }
-        .decode(type: CityWeatherList.self, decoder: JSONDecoder())
+        .decode(type: CurrentCityWeatherResults.self, decoder: JSONDecoder())
         .eraseToAnyPublisher()
     }
     

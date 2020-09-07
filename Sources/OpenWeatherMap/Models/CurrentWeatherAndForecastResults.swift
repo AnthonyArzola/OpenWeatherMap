@@ -77,7 +77,7 @@ Model the following response:
 }
 */
 
-public struct Forecast: Codable {
+public struct CurrentWeatherAndForecastResults: Codable {
     public let latitude: Float
     public let longitude: Float
     public let timezone: String
