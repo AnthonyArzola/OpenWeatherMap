@@ -66,11 +66,33 @@ final class OpenWeatherMapTests: XCTestCase {
                 expectation.fulfill()
             } else {
                 print("Failure!")
-                //XCTAssertNil(weather)
+                XCTAssertNil(cityWeather)
                 XCTFail()
                 expectation.fulfill()
             }
         }
+        
+        self.wait(for: [expectation], timeout: 100.0)
+    }
+    
+    func testWeatherForecastAtLocation() {
+        let expectation = XCTestExpectation.init(description: "Retrieve weather forecast by location")
+        let weatherService = OpenWeatherMapService(apiKey: apiKey)
+        
+        XCTAssertNotEqual(apiKey, "", "API Key is missing")
+        weatherService.weatherForecastAt(latitude: 37.7748, longitude: -122.4248, completion: { (success, forecast) in
+            if success {
+                print("Success! \(String(describing: forecast))")
+                XCTAssertNotNil(forecast)
+                XCTAssertTrue(forecast?.dailyForecast.count ?? 0 >= 0)
+                expectation.fulfill()
+            } else {
+                print("Failure!")
+                XCTAssertNil(forecast)
+                XCTFail()
+                expectation.fulfill()
+            }
+        })
         
         self.wait(for: [expectation], timeout: 100.0)
     }

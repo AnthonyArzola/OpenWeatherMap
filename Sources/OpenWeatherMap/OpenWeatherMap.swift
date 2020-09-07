@@ -69,6 +69,26 @@ public class OpenWeatherMapService {
         session.finishTasksAndInvalidate()
     }
     
+    public func weatherForecastAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool,Forecast?) -> Void) {
+        guard let key = apiKey else { return }
+        
+        // Create and configure URL
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+        urlQueryitems.append(URLQueryItem(name: "exclude", value: "minutely,hourly"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: key))
+        
+        guard let url = createUrl(endpoint: "/onecall", urlQueryItems: urlQueryitems) else { return }
+        // Create URL request
+        let request = createUrlRequest(url: url, httpMethodType: .GET)
+        // Create task
+        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
+        
+        task.resume()
+        session.finishTasksAndInvalidate()
+    }
+    
     /**
      Retrieves weather for specific city (e.g., "berkeley,ca).
      */

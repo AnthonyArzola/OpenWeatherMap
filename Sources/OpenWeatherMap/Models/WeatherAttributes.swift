@@ -22,10 +22,10 @@ import Foundation
  */
 
 public struct WeatherAttributes: Codable {
-    public let temperature: Double //in Kelvin
+    public let temperature: Double // in Kelvin
     public let feelsLike: Double // in Kelvin
-    public let tempMimimum: Double //in Kelvin
-    public let tempMaximum: Double //in Kelvin
+    public let tempMimimum: Double // in Kelvin
+    public let tempMaximum: Double // in Kelvin
     public let pressure: Double
     public let humidity: Double
     
