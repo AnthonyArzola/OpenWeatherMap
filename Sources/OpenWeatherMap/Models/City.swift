@@ -14,6 +14,13 @@ public struct City: Codable {
     public let country: String
     public let coordinate: Coordinate
     
+    public init(id: Int, name: String, country: String, coordinate: Coordinate) {
+        self.id = id
+        self.name = name
+        self.country = country
+        self.coordinate = coordinate
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id
         case name

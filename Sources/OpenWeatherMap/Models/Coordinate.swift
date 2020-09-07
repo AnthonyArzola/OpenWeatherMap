@@ -21,9 +21,13 @@ public struct Coordinate: Codable {
     public let latitude: Double
     public let longitude: Double
     
+    public init(lat: Double, lon: Double) {
+        latitude = lat
+        longitude = lon
+    }
+    
     private enum CodingKeys: String, CodingKey {
         case latitude = "lat"
         case longitude = "lon"
     }
-    
 }
