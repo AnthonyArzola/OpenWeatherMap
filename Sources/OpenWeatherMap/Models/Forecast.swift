@@ -78,12 +78,12 @@ Model the following response:
 */
 
 public struct Forecast: Codable {
-    let latitude: Float
-    let longitude: Float
-    let timezone: String
-    let timezoneOffset: Int16
-    let currentWeather: CurrentWeather
-    let dailyForecast: [ForecastWeather]
+    public let latitude: Float
+    public let longitude: Float
+    public let timezone: String
+    public let timezoneOffset: Int16
+    public let currentWeather: CurrentWeather
+    public let dailyForecast: [ForecastWeather]
     
     private enum CodingKeys: String, CodingKey {
         case latitude = "lat"

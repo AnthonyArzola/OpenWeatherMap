@@ -18,12 +18,12 @@ import Foundation
  "morn": 313.38
  */
 public struct ForecastTemperature: Codable {
-    let day: Float // in Kelvin
-    let minimum: Float // in Kelvin
-    let maximum: Float // in Kelvin
-    let night: Float // in Kelvin
-    let evening: Float // in Kelvin
-    let morning: Float // in Kelvin
+    public let day: Float // in Kelvin
+    public let minimum: Float // in Kelvin
+    public let maximum: Float // in Kelvin
+    public let night: Float // in Kelvin
+    public let evening: Float // in Kelvin
+    public let morning: Float // in Kelvin
     
     private enum CodingKeys: String, CodingKey {
         case day
@@ -44,10 +44,10 @@ public struct ForecastTemperature: Codable {
  "morn": 310.7
  */
 public struct ForecastFeelsLikeTemperature: Codable {
-    let day: Float // in Kelvin
-    let night: Float // in Kelvin
-    let evening: Float // in Kelvin
-    let morning: Float // in Kelvin
+    public let day: Float // in Kelvin
+    public let night: Float // in Kelvin
+    public let evening: Float // in Kelvin
+    public let morning: Float // in Kelvin
     
     private enum CodingKeys: String, CodingKey {
         case day
@@ -97,19 +97,19 @@ public struct ForecastFeelsLikeTemperature: Codable {
 }
  */
 public struct ForecastWeather: Codable {
-    let dateTime: Date
-    let sunrise: Date
-    let sunset: Date
-    let temperatures: ForecastTemperature
-    let temperatureFeelsLike: ForecastFeelsLikeTemperature
-    let pressure: Int16
-    let humidity: Int16
-    let dewPoint: Float
-    let uvi: Float
-    let clouds: Int16
-    let windSpeed: Float
-    let windDegree: Int16
-    let weather: [WeatherDescriptions]
+    public let dateTime: Date
+    public let sunrise: Date
+    public let sunset: Date
+    public let temperatures: ForecastTemperature
+    public let temperatureFeelsLike: ForecastFeelsLikeTemperature
+    public let pressure: Int16
+    public let humidity: Int16
+    public let dewPoint: Float
+    public let uvi: Float
+    public let clouds: Int16
+    public let windSpeed: Float
+    public let windDegree: Int16
+    public let weather: [WeatherDescriptions]
     
     private enum CodingKeys: String, CodingKey {
         case dateTime = "dt"

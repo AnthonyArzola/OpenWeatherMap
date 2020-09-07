@@ -34,20 +34,20 @@ import Foundation
 */
 
 public struct CurrentWeather: Codable {
-    let dateTime: Date
-    let sunrise: Date
-    let sunset: Date
-    let temperature: Float // in Kelvin
-    let feelsLike: Float // in Kelvin
-    let pressure: Int16
-    let humidity: Int16
-    let dewPoint: Float
-    let uvi: Float
-    let clouds: Int16
-    let visibility: Int
-    let windSpeed: Float
-    let windDegrees: Int16
-    let weatherDescription: [WeatherDescriptions]
+    public let dateTime: Date
+    public let sunrise: Date
+    public let sunset: Date
+    public let temperature: Float // in Kelvin
+    public let feelsLike: Float // in Kelvin
+    public let pressure: Int16
+    public let humidity: Int16
+    public let dewPoint: Float
+    public let uvi: Float
+    public let clouds: Int16
+    public let visibility: Int
+    public let windSpeed: Float
+    public let windDegrees: Int16
+    public let weatherDescription: [WeatherDescriptions]
     
     private enum CodingKeys: String, CodingKey {
         case dateTime = "dt"
