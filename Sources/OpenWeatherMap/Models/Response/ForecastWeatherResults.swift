@@ -88,17 +88,20 @@ public struct ForecastWeatherResults: Codable {
 public struct CityForecast: Codable {
     public let dateTime: Date
     public let weatherAttributes: WeatherAttributes
+    public let weatherDescriptions: [WeatherDescriptions]
     public let wind: Wind
     
-    public init(date: Date, weatherAttributes: WeatherAttributes, wind: Wind) {
+    public init(date: Date, weatherAttributes: WeatherAttributes, wind: Wind, weatherDescriptions: [WeatherDescriptions]) {
         self.dateTime = date
         self.weatherAttributes = weatherAttributes
+        self.weatherDescriptions = weatherDescriptions
         self.wind = wind
     }
     
     enum CodingKeys: String, CodingKey {
         case dateTime = "dt"
         case weatherAttributes = "main"
+        case weatherDescriptions = "weather"
         case wind
     }
 }
