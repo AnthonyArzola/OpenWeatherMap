@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-typealias OpenWeatherMapAPI = (OpenWeatherMapAuthentication & OpenWeatherMapClosure & OpenWeatherMapCombine & OpenWeatherMapAsync)
+public typealias OpenWeatherMapAPI = (OpenWeatherMapAuthentication & OpenWeatherMapClosure & OpenWeatherMapCombine & OpenWeatherMapAsync)
 
 // MARK: - Authentication
 public protocol OpenWeatherMapAuthentication {
