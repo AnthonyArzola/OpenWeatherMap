@@ -40,6 +40,7 @@ public class OpenWeatherMapService: OpenWeatherMapAPI {
 
 // MARK: - Closure based
 extension OpenWeatherMapService {
+    
     /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
     public func currentWeatherAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CityWeather?) -> Void) {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
@@ -100,7 +101,6 @@ extension OpenWeatherMapService {
 
     /// Gets current weather and 7-day forecast for geographic coordinates.
     public func currentWeatherAndForecastAt(latitude lat: Double, longitude long: Double, completion closure: @escaping (Bool, CurrentWeatherAndForecastResults?) -> Void) {
-        
         // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
@@ -174,6 +174,7 @@ extension OpenWeatherMapService {
 
 // MARK: - Combine based
 extension OpenWeatherMapService {
+    
     /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
     public func weatherAt(lat: Double, long: Double) -> AnyPublisher<CityWeather, Error> {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
@@ -234,6 +235,7 @@ extension OpenWeatherMapService {
 
 // MARK: - Async-Await
 extension OpenWeatherMapService {
+    
     /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
     public func weatherAt(lat: Double, long: Double) async throws -> CityWeather {
         // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
@@ -252,7 +254,13 @@ extension OpenWeatherMapService {
         let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
         
         do {
-            let task: (data: Data, response: URLResponse) = try await session.data(for: urlRequest)
+            var task: (data: Data, response: URLResponse)
+            if #available(iOS 15.0, *) {
+                task = try await session.data(for: urlRequest, delegate: nil)
+            } else {
+                task = try await session.data(for: urlRequest)
+            }
+            
             // Verify data was returned
             guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
                 throw ApiError.missingData
