@@ -234,46 +234,46 @@ extension OpenWeatherMapService {
 }
 
 // MARK: - Async-Await
-extension OpenWeatherMapService {
-    
-    /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
-    public func weatherAt(lat: Double, long: Double) async throws -> CityWeather {
-        // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
-        
-        // Create and cofigure URL
-        var urlQueryitems = [URLQueryItem]()
-        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
-        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
-        urlQueryitems.append(URLQueryItem(name: "appid", value: apiKey))
-        
-        guard let url = createUrl(endpoint: "/find", urlQueryItems: urlQueryitems) else {
-            throw ApiError.invalidUrl
-        }
-        
-        // Create URL request
-        let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
-        
-        do {
-            var task: (data: Data, response: URLResponse)
-            if #available(iOS 15.0, *) {
-                task = try await session.data(for: urlRequest, delegate: nil)
-            } else {
-                task = try await session.data(for: urlRequest)
-            }
-            
-            // Verify data was returned
-            guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
-                throw ApiError.missingData
-            }
-            // Verify valid status code
-            guard httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299 else {
-                throw ApiError.statusCode(httpResponse.statusCode)
-            }
-            
-            let model = try decoder.decode(CityWeather.self, from: task.data)
-            return model
-        } catch {
-            throw ApiError.decoding
-        }
-    }
-}
+//extension OpenWeatherMapService {
+//
+//    /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
+//    public func weatherAt(lat: Double, long: Double) async throws -> CityWeather {
+//        // API Example: http://api.openweathermap.org/data/2.5/weather?lat=34.02&lon=-118.17&APPID={YOUR_API_KEY}
+//
+//        // Create and cofigure URL
+//        var urlQueryitems = [URLQueryItem]()
+//        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(lat)"))
+//        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(long)"))
+//        urlQueryitems.append(URLQueryItem(name: "appid", value: apiKey))
+//
+//        guard let url = createUrl(endpoint: "/find", urlQueryItems: urlQueryitems) else {
+//            throw ApiError.invalidUrl
+//        }
+//
+//        // Create URL request
+//        let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
+//
+//        do {
+//            var task: (data: Data, response: URLResponse)
+//            if #available(iOS 15.0, *) {
+//                task = try await session.data(for: urlRequest, delegate: nil)
+//            } else {
+//                task = try await session.data(for: urlRequest)
+//            }
+//
+//            // Verify data was returned
+//            guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
+//                throw ApiError.missingData
+//            }
+//            // Verify valid status code
+//            guard httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299 else {
+//                throw ApiError.statusCode(httpResponse.statusCode)
+//            }
+//
+//            let model = try decoder.decode(CityWeather.self, from: task.data)
+//            return model
+//        } catch {
+//            throw ApiError.decoding
+//        }
+//    }
+//}
