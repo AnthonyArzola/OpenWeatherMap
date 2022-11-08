@@ -10,6 +10,7 @@ final class OpenWeatherMapTests: XCTestCase {
         XCTAssertNotNil(service)
     }
 
+    // MARK: Closure based tests
     func testGetWeatherAtCoordinates() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather at location")
         let weatherService = OpenWeatherMapService(apiKey: apiKey)
