@@ -55,9 +55,7 @@ extension OpenWeatherMapService {
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        
         task.resume()
-        session.finishTasksAndInvalidate()
     }
     
     /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for number of cities defined by `resultCount`.
