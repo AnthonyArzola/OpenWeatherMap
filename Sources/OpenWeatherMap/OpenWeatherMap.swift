@@ -76,9 +76,7 @@ extension OpenWeatherMapService {
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        
         task.resume()
-        session.finishTasksAndInvalidate()
     }
 
     /// Gets 5-day weather forecast with data every 3 hours for geographic coordinates.
@@ -94,9 +92,7 @@ extension OpenWeatherMapService {
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        
         task.resume()
-        session.finishTasksAndInvalidate()
     }
 
     /// Gets current weather and 7-day forecast for geographic coordinates.
@@ -113,9 +109,7 @@ extension OpenWeatherMapService {
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create task
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        
         task.resume()
-        session.finishTasksAndInvalidate()
     }
     
     /// Get current weather for specific city (e.g., "berkeley,ca").
@@ -133,9 +127,7 @@ extension OpenWeatherMapService {
         let request = createUrlRequest(url: url, httpMethodType: .GET)
         // Create URL request
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        
         task.resume()
-        session.finishTasksAndInvalidate()
     }
     
     // MARK: - Private methods
