@@ -28,9 +28,9 @@ public struct CityWeather: Codable {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case name
+        case name = "name"
         case Id = "id"
-        case timezone
+        case timezone = "timezone"
         case coordinate = "coord"
         case weatherDescriptions = "weather"
         case attributes = "main"
