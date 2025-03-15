@@ -67,6 +67,7 @@ Model the follwing response:
 }
 */
 
+/// DTO for ``CityForecast``.
 public struct ForecastWeatherResults: Codable {
     public let count: Int16
     public let cityForecast: [CityForecast]
@@ -85,6 +86,7 @@ public struct ForecastWeatherResults: Codable {
     }
 }
 
+/// Models forecasted city weather.
 public struct CityForecast: Codable {
     public let dateTime: Date
     public let weatherAttributes: WeatherAttributes

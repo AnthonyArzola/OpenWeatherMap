@@ -3,7 +3,6 @@
 //  OpenWeatherMap
 //
 //  Created by Anthony Arzola on 7/7/19.
-//  Copyright © 2019 Anthony Arzola. All rights reserved.
 //
 
 import Foundation
@@ -18,6 +17,7 @@ import Foundation
  }
  */
 
+/// DTO for ``CityWeather``.
 public struct CurrentCityWeatherResults: Codable {
     public let message: String
     public let cod: String

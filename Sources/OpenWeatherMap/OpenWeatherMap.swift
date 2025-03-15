@@ -10,7 +10,7 @@ public class OpenWeatherMapService: OpenWeatherMapAPI {
     // MARK: Properties
     private let session: URLSession
     private let baseUrl: String
-    private (set) public var apiKey: String
+    private(set) public var apiKey: String
     private let decoder = JSONDecoder()
     
     // MARK: Constructors
@@ -38,7 +38,7 @@ public class OpenWeatherMapService: OpenWeatherMapAPI {
     }
 }
 
-// MARK: - Closure based
+// MARK: - Closure support
 extension OpenWeatherMapService {
     
     /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
@@ -114,23 +114,6 @@ extension OpenWeatherMapService {
         let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
         task.resume()
     }
-
-    /// Gets current weather and 7-day forecast for geographic coordinates.
-    public func currentWeatherAndForecastAt(latitude: Double, longitude: Double, completion closure: @escaping (Bool, CurrentWeatherAndForecastResults?) -> Void) {
-        // Create and configure URL
-        var urlQueryitems = [URLQueryItem]()
-        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(latitude)"))
-        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(longitude)"))
-        urlQueryitems.append(URLQueryItem(name: "exclude", value: "minutely,hourly"))
-        urlQueryitems.append(URLQueryItem(name: "appid", value: apiKey))
-        
-        guard let url = createUrl(endpoint: "/onecall", urlQueryItems: urlQueryitems) else { return }
-        // Create URL request
-        let request = createUrlRequest(url: url, httpMethodType: .GET)
-        // Create task
-        let task = createRequestAndDecodeUrlSessionDataTask(urlRequest: request, completion: closure)
-        task.resume()
-    }
     
     // MARK: - Private methods
     private func createRequestAndDecodeUrlSessionDataTask<T: Decodable>(urlRequest: URLRequest, completion closure: @escaping (Bool, T?) -> Void) -> URLSessionDataTask {
@@ -166,7 +149,7 @@ extension OpenWeatherMapService {
     }
 }
 
-// MARK: - Combine based
+// MARK: - Combine support
 extension OpenWeatherMapService {
     
     /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
@@ -201,7 +184,7 @@ extension OpenWeatherMapService {
     public func currentWeatherAt(latitude: Double, longitude: Double, cityCount: Int) -> AnyPublisher<CurrentCityWeatherResults, Error> {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         
-        // Create and cofigure URL
+        // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "lat", value: "\(latitude)"))
         urlQueryitems.append(URLQueryItem(name: "lon", value: "\(longitude)"))
@@ -227,14 +210,14 @@ extension OpenWeatherMapService {
     }
 }
 
-// MARK: - Async-Await
+// MARK: - Async-Await support
 extension OpenWeatherMapService {
     
     /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for 10 cities.
     public func currentWeatherAt(latitude: Double, longitude: Double) async throws -> CityWeather {
         // API Example: GET http://api.openweathermap.org/data/2.5/find?lat=34.022&lon=-118.9&cnt=10&APPID={YOUR_API_KEY}
         
-        // Create and cofigure URL
+        // Create and configure URL
         var urlQueryitems = [URLQueryItem]()
         urlQueryitems.append(URLQueryItem(name: "lat", value: "\(latitude)"))
         urlQueryitems.append(URLQueryItem(name: "lon", value: "\(longitude)"))
@@ -247,22 +230,51 @@ extension OpenWeatherMapService {
         // Create URL request
         let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
         
-        do {
-            var task: (data: Data, response: URLResponse)
-            task = try await session.data(for: urlRequest, delegate: nil)
-            
-            // Verify data was returned
-            guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
-                throw ApiError.missingData
-            }
-            // Verify valid status code
-            guard httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299 else {
-                throw ApiError.statusCode(httpResponse.statusCode)
-            }
-            
-            return try decoder.decode(CityWeather.self, from: task.data)
-        } catch {
-            throw ApiError.decoding
+        var task: (data: Data, response: URLResponse)
+        task = try await session.data(for: urlRequest, delegate: nil)
+        
+        // Verify data was returned
+        guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
+            throw ApiError.missingData
         }
+        // Verify valid status code
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299 else {
+            throw ApiError.statusCode(httpResponse.statusCode)
+        }
+        
+        return try decoder.decode(CityWeather.self, from: task.data)
     }
+    
+    /// Gets forecasted weather for geographic coordinates (`latitude`, `longitude`).
+    public func forecastWeatherAt(latitude: Double, longitude: Double) async throws -> ForecastWeatherResults {
+        // API example: GET http://api.openweathermap.org/data/2.5/forecast?lat=34.022&lon=-118.9&APPID={YOUR_API_KEY}
+        
+        // Create and configure URL
+        var urlQueryitems = [URLQueryItem]()
+        urlQueryitems.append(URLQueryItem(name: "lat", value: "\(latitude)"))
+        urlQueryitems.append(URLQueryItem(name: "lon", value: "\(longitude)"))
+        urlQueryitems.append(URLQueryItem(name: "appid", value: apiKey))
+         
+        guard let url = createUrl(endpoint: "/forecast", urlQueryItems: urlQueryitems) else {
+            throw ApiError.invalidUrl
+        }
+    
+        // Create URL request
+        let urlRequest = createUrlRequest(url: url, httpMethodType: .GET)
+        
+        var task: (data: Data, response: URLResponse)
+        task = try await session.data(for: urlRequest, delegate: nil)
+        
+        // Verify data was returned
+        guard !task.data.isEmpty, let httpResponse = task.response as? HTTPURLResponse else {
+            throw ApiError.missingData
+        }
+        // Verify valid status code
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode <= 299 else {
+            throw ApiError.statusCode(httpResponse.statusCode)
+        }
+        
+        return try decoder.decode(ForecastWeatherResults.self, from: task.data)
+    }
+    
 }

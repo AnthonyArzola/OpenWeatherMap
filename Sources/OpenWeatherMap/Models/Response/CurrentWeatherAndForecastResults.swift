@@ -77,6 +77,7 @@ Model the following response:
 }
 */
 
+/// DTO for``CurrentWeather`` and ``ForecastWeather``.
 public struct CurrentWeatherAndForecastResults: Codable {
     public let latitude: Float
     public let longitude: Float

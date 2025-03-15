@@ -7,7 +7,7 @@ final class OpenWeatherMapTests: XCTestCase {
     let apiKey = ""
     var weatherService: OpenWeatherMapService!
     
-    func testInitFunction() {
+    func testInit() {
         let service = OpenWeatherMapService(apiKey: apiKey)
         XCTAssertNotNil(service)
     }
@@ -102,24 +102,6 @@ final class OpenWeatherMapTests: XCTestCase {
         self.wait(for: [expectation], timeout: 5.0)
     }
     
-    func testGetCurrentWeatherAndForecastAtLocationSuccess() {
-        let expectation = XCTestExpectation.init(description: "Retrieve current weather and forecast by location")
-        let weatherService = OpenWeatherMapService(apiKey: apiKey)
-        
-        weatherService.currentWeatherAndForecastAt(latitude: 37.7748, longitude: -122.4248, completion: { (success, forecast) in
-            if success {
-                XCTAssertNotNil(forecast)
-                XCTAssertTrue(forecast?.dailyForecast.count ?? 0 >= 0)
-                expectation.fulfill()
-            } else {
-                XCTFail("Failed unexpectedly")
-                expectation.fulfill()
-            }
-        })
-        
-        self.wait(for: [expectation], timeout: 5.0)
-    }
-    
     // MARK: - Combine tests
     func testCurrentWeatherAt() {
         let expectation = XCTestExpectation.init(description: "Retrieve current weather by location using Combine Publisher")
@@ -155,4 +137,16 @@ final class OpenWeatherMapTests: XCTestCase {
             XCTFail("\(error)")
         }
     }
+
+    @MainActor
+    func testAsyncForecastWeatherAt() async {
+        do {
+            let result = try await weatherService.forecastWeatherAt(latitude: 37.7748, longitude: -122.4248)
+            XCTAssertNotNil(result)
+            XCTAssertTrue(result.cityForecast.count > 0, "Forecast data should not be empty")
+        } catch {
+            XCTFail("Failed unexpectedly. Error: \(error)")
+        }
+    }
+
 }

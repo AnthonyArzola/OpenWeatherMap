@@ -3,7 +3,6 @@
 //  OpenWeatherMap
 //
 //  Created by Anthony Arzola on 7/6/19.
-//  Copyright © 2019 Anthony Arzola. All rights reserved.
 //
 
 import Foundation
