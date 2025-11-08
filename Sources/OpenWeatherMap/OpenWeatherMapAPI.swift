@@ -36,6 +36,12 @@ public protocol OpenWeatherMapCombine {
     
     /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for number of cities defined by `cityCount`.
     func currentWeatherAt(latitude: Double, longitude: Double, cityCount: Int) -> AnyPublisher<CurrentCityWeatherResults, Error>
+    
+    /// Get current weather for specific city (e.g., "berkeley,ca").
+    func currentWeatherAt(cityName: String) -> AnyPublisher<CityWeather, Error>
+    
+    /// Gets 5-day weather forecast with data every 3 hours for geographic coordinates.
+    func forecastWeatherAt(latitude: Double, longitude: Double) -> AnyPublisher<ForecastWeatherResults, Error>
 }
 
 // MARK: - Async API
@@ -43,6 +49,12 @@ public protocol OpenWeatherMapAsync {
     
     /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for 10 cities.
     func currentWeatherAt(latitude: Double, longitude: Double) async throws -> CityWeather
+    
+    /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for number of cities defined by `cityCount`.
+    func currentWeatherAt(latitude: Double, longitude: Double, cityCount: Int) async throws -> CurrentCityWeatherResults
+    
+    /// Get current weather for specific city (e.g., "berkeley,ca").
+    func currentWeatherAt(cityName: String) async throws -> CityWeather
     
     /// Gets forecasted weather for geographic coordinates (`latitude`, `longitude`).
     func forecastWeatherAt(latitude: Double, longitude: Double) async throws -> ForecastWeatherResults

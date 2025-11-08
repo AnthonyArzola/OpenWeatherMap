@@ -17,16 +17,56 @@ Currently, this packages does not have any third-party dependencies.
 
 ## Example
 
-```swift
-let weatherService = OpenWeatherMapService(apiKey: "API_KEY_HERE")
+The OpenWeatherMap service supports three concurrency patterns: **Closures**, **Combine**, and **Async-Await**.
 
-weatherService.weatherAt(latitude: 34.0580, longitude: -117.8239, apiKey: apiKey, completion: { (success: Bool, results: WeatherResults?) -> Void in
-    if (success) {
-        print("Success!")
+### Closure-based
+
+```swift
+let weatherService = OpenWeatherMapService(apiKey: "YOUR_API_KEY")
+
+// Get weather by coordinates
+weatherService.currentWeatherAt(latitude: 37.7749, longitude: -122.4194) { (success: Bool, weather: CityWeather?) in
+    if success, let weather = weather {
+        print("Temperature: \(weather.currentWeather.temp)")
     } else {
-        print("Failure!")
+        print("Failed to retrieve weather")
     }
-})
+}
+```
+
+### Combine
+
+```swift
+import Combine
+
+let weatherService = OpenWeatherMapService(apiKey: "YOUR_API_KEY")
+var cancellables = Set<AnyCancellable>()
+
+// Get weather by city name
+weatherService.currentWeatherAt(cityName: "San Francisco")
+    .sink { completion in
+        // Handle completion
+    } receiveValue: { weather in
+        print("City: \(weather.name)")
+    }
+    .store(in: &cancellables)
+```
+
+### Async-Await
+
+```swift
+let weatherService = OpenWeatherMapService(apiKey: "YOUR_API_KEY")
+
+Task {
+    do {
+        // Get weather for multiple cities around coordinates
+        let results = try await weatherService.currentWeatherAt(latitude: 37.7749, longitude: -122.4194, cityCount: 10)
+        print("Found \(results.results.count) cities")
+        
+    } catch {
+        print("Error: \(error)")
+    }
+}
 ```
 
 
