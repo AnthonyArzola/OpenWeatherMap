@@ -16,17 +16,17 @@ public protocol OpenWeatherMapAuthentication {
 
 // MARK: - Closure API
 public protocol OpenWeatherMapClosure {
-    /// Gets current weather for geographic coordinates (`latitude`, `longitude`).
-    func currentWeatherAt(latitude: Double, longitude: Double, completion closure: @escaping (Bool, CityWeather?) -> Void)
+    /// Gets current weather for geographic coordinates.
+    func currentWeatherAt(latitude: Double, longitude: Double, completion: @escaping (Result<CityWeather, Error>) -> Void)
     
-    /// Creates circle around geographic coordinates (`latitude`, `longitude`) and returns weather for number of cities defined by `resultCount`.
-    func currentWeatherAt(latitude: Double, longitude: Double, resultCount count: Int, completion closure: @escaping (Bool, CurrentCityWeatherResults?) -> Void)
+    /// Gets weather for multiple cities around specified coordinates.
+    func currentWeatherAt(latitude: Double, longitude: Double, resultCount count: Int, completion: @escaping (Result<CurrentCityWeatherResults, Error>) -> Void)
     
-    /// Get current weather for specific city (e.g., "berkeley,ca").
-    func currentWeatherAt(cityName: String, completion closure: @escaping (Bool, CityWeather?) -> Void)
+    /// Gets current weather for a specific city.
+    func currentWeatherAt(cityName: String, completion: @escaping (Result<CityWeather, Error>) -> Void)
     
     /// Gets 5-day weather forecast with data every 3 hours for geographic coordinates.
-    func forecastWeatherAt(latitude: Double, longitude: Double, completion closure: @escaping (Bool, ForecastWeatherResults?) -> Void)    
+    func forecastWeatherAt(latitude: Double, longitude: Double, completion: @escaping (Result<ForecastWeatherResults, Error>) -> Void)    
 }
 
 // MARK: - Combine API

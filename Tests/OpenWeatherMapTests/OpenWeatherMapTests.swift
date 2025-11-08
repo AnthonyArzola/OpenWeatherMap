@@ -22,16 +22,17 @@ final class OpenWeatherMapTests: XCTestCase {
     func test_closure_currentWeatherAt() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather at lat/lon")
 
-        weatherService.currentWeatherAt(latitude: 37.7748, longitude: -122.4248, completion: { (success: Bool, result: CityWeather?) -> Void in
-            if (success) {
-                XCTAssertNotNil(result)
-                XCTAssertNotNil(result?.name)
+        weatherService.currentWeatherAt(latitude: 37.7748, longitude: -122.4248) { result in
+            switch result {
+            case .success(let weather):
+                XCTAssertNotNil(weather)
+                XCTAssertNotNil(weather.name)
                 expectation.fulfill()
-            } else {
-                XCTFail("Failed unexpectedly")
+            case .failure(let error):
+                XCTFail("Failed unexpectedly: \(error)")
                 expectation.fulfill()
             }
-        })
+        }
         
         self.wait(for: [expectation], timeout: 5.0)
     }
@@ -39,16 +40,17 @@ final class OpenWeatherMapTests: XCTestCase {
     func test_closure_currentWeatherAt_with_count() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather at location")
         
-        weatherService.currentWeatherAt(latitude: 34.0429, longitude: -118.2449, resultCount: 15, completion: { (success: Bool, weather: CurrentCityWeatherResults?) -> Void in
-            if (success) {
+        weatherService.currentWeatherAt(latitude: 34.0429, longitude: -118.2449, resultCount: 15) { result in
+            switch result {
+            case .success(let weather):
                 XCTAssertNotNil(weather)
-                XCTAssertNotNil(weather?.results)
+                XCTAssertNotNil(weather.results)
                 expectation.fulfill()
-            } else {
-                XCTFail("Failed unexpectedly")
+            case .failure(let error):
+                XCTFail("Failed unexpectedly: \(error)")
                 expectation.fulfill()
             }
-        })
+        }
         
         self.wait(for: [expectation], timeout: 5.0)
     }
@@ -56,13 +58,14 @@ final class OpenWeatherMapTests: XCTestCase {
     func test_closure_currentWeatherAt_by_city_name() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather by name")
         
-        weatherService.currentWeatherAt(cityName: "Irvine,CA") { (success, cityWeather) in
-            if success {
+        weatherService.currentWeatherAt(cityName: "Irvine,CA") { result in
+            switch result {
+            case .success(let cityWeather):
                 XCTAssertNotNil(cityWeather)
-                XCTAssert(cityWeather?.weatherDescriptions?.count ?? 0 > 0)
+                XCTAssert(cityWeather.weatherDescriptions?.count ?? 0 > 0)
                 expectation.fulfill()
-            } else {
-                XCTFail("Failed unexpectedly")
+            case .failure(let error):
+                XCTFail("Failed unexpectedly: \(error)")
                 expectation.fulfill()
             }
         }
@@ -73,11 +76,13 @@ final class OpenWeatherMapTests: XCTestCase {
     func test_closure_currentWeatherAt_by_city_name_failure() {
         let expectation = XCTestExpectation.init(description: "Retrieve weather by incorrect name")
         
-        weatherService.currentWeatherAt(cityName: "FakeCity,CA") { (success, cityWeather) in
-            if success {
-                XCTFail("Unexpected success.")
+        weatherService.currentWeatherAt(cityName: "FakeCity,CA") { result in
+            switch result {
+            case .success:
+                XCTFail("Unexpected success")
                 expectation.fulfill()
-            } else {
+            case .failure:
+                // Expected to fail
                 expectation.fulfill()
             }
         }
@@ -88,16 +93,17 @@ final class OpenWeatherMapTests: XCTestCase {
     func test_closure_forecastWeatherAt() {
         let expectation = XCTestExpectation.init(description: "Retrieve current weather and forecast by location")
         
-        weatherService.forecastWeatherAt(latitude: 37.7748, longitude: -122.4248, completion: { (success, forecast) in
-            if success {
+        weatherService.forecastWeatherAt(latitude: 37.7748, longitude: -122.4248) { result in
+            switch result {
+            case .success(let forecast):
                 XCTAssertNotNil(forecast)
-                XCTAssertTrue(forecast?.cityForecast.count ?? 0 >= 0)
+                XCTAssertTrue(forecast.cityForecast.count >= 0)
                 expectation.fulfill()
-            } else {
-                XCTFail("Failed unexpectedly")
+            case .failure(let error):
+                XCTFail("Failed unexpectedly: \(error)")
                 expectation.fulfill()
             }
-        })
+        }
         
         self.wait(for: [expectation], timeout: 5.0)
     }

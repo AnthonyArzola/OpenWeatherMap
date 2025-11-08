@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum ApiError: Error, LocalizedError{
-    case decoding
+public enum ApiError: Error, LocalizedError {
+    case decoding(Error)
     case invalidUrl
     case generic(Error)
     case emptyResponse
@@ -17,24 +17,28 @@ enum ApiError: Error, LocalizedError{
     case statusCode(Int)
     case unknown
     
-    var localizedDescription: String {
+    public var errorDescription: String? {
         switch self {
-        case .decoding:
-            return "Decoding error."
+        case .decoding(let error):
+            return "Failed to decode response: \(error.localizedDescription)"
         case .invalidUrl:
-            return "Invalid URL."
+            return "Invalid URL configuration"
         case .generic(let error):
-            return error.localizedDescription
+            return "Request failed: \(error.localizedDescription)"
         case .emptyResponse:
-            return "API succeeded, but returned empty response."
+            return "API succeeded, but returned empty response"
         case .missingApiKey:
-            return "Missing API key."
+            return "API key is required but was not provided"
         case .missingData:
-            return "Missing data"
+            return "No data received from server"
         case .statusCode(let statusCode):
-            return "HTTP response error. Status code:\(statusCode)"
+            return "HTTP error with status code: \(statusCode)"
         case .unknown:
-            return "Unknown error occured. 😢"
+            return "An unknown error occurred"
         }
+    }
+    
+    public var localizedDescription: String {
+        return errorDescription ?? "Unknown error"
     }
 }
